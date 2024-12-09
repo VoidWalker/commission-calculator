@@ -1,0 +1,16 @@
+{
+    "name": "oleksandrsokhan/commission-calculator",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Oleksandrsokhan\\CommissionCalculator\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Oleksandr Sokhan",
+            "email": "sohanoleksa@gmail.com"
+        }
+    ],
+    "require": {}
+}
