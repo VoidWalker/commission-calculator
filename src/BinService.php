@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Oleksandrsokhan\CommissionCalculator;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Oleksandrsokhan\CommissionCalculator\Api\BinServiceInterface;
 
 class BinService implements BinServiceInterface
@@ -38,20 +39,29 @@ class BinService implements BinServiceInterface
         'SK'
     ];
 
+    public function __construct(
+        private readonly \GuzzleHttp\ClientInterface $httpClient
+    ) {
+    }
+
     public function getCountryByBin(string $bin): ?string
     {
         $url = str_replace('{bin}', $bin, self::URL_PATTERN);
-        $response = file_get_contents($url);
-        if ($response === false) {
-            throw new \RuntimeException("Failed to get data from $url");
-        }
+        try {
+            $response = $this->httpClient->request('GET', $url);
 
-        $data = json_decode($response, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \RuntimeException("Failed to decode JSON data");
-        }
+            if ($response->getStatusCode() !== 200) {
+                throw new \RuntimeException('Invalid response code');
+            }
 
-        return $data['country']['alpha2'] ?? null;
+            $data = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+
+            return $data['country']['alpha2'] ?? null;
+        } catch (\JsonException $e) {
+            throw new \RuntimeException("Error parsing BIN data: " . $e->getMessage());
+        } catch (\Exception|GuzzleException $e) {
+            throw new \RuntimeException("Error fetching BIN data: " . $e->getMessage());
+        }
     }
 
     public function isEuCountryCard(string $bin): bool

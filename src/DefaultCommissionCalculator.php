@@ -8,7 +8,6 @@ use Oleksandrsokhan\CommissionCalculator\Api\TransactionInterface;
 
 class DefaultCommissionCalculator implements Api\CommissionCalculatorInterface
 {
-
     public function __construct(
         private readonly BinServiceInterface $binService,
         private readonly CurrencyRateService $currencyRateService
@@ -22,6 +21,6 @@ class DefaultCommissionCalculator implements Api\CommissionCalculatorInterface
 
         $amount = $rate == 0 ? $transaction->getAmount() : $transaction->getAmount() / $rate;
 
-        return $isEu ? $amount * 0.01 : $amount * 0.02;
+        return $isEu ? $amount * self::COMMISSION_RATE_EU : $amount * self::COMMISSION_RATE_NON_EU;
     }
 }

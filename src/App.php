@@ -37,7 +37,7 @@ class App
 
     private function calculateCommission(Transaction $transaction): float
     {
-        $calculator = $this->comissionCalculators[$transaction->getCurrency()] ?? $this->commissionCalculators['default'];
+        $calculator = $this->commissionCalculators[$transaction->getCurrency()] ?? $this->commissionCalculators['default'];
         return $calculator->calculateCommission($transaction);
     }
 }

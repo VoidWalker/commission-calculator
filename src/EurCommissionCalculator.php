@@ -19,6 +19,6 @@ class EurCommissionCalculator implements CommissionCalculatorInterface
         $isEu = $this->binService->isEuCountryCard($transaction->getBin());
         $amount = $transaction->getAmount();
 
-        return $isEu ? $amount * 0.01 : $amount * 0.02;
+        return $isEu ? $amount * self::COMMISSION_RATE_EU : $amount * self::COMMISSION_RATE_NON_EU;
     }
 }
