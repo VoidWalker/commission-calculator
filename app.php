@@ -5,9 +5,18 @@ use \Oleksandrsokhan\CommissionCalculator\App;
 
 
 $app = new App(
-    new \Oleksandrsokhan\CommissionCalculator\TxtFileReader(),
-    new \Oleksandrsokhan\CommissionCalculator\BinService(),
-    new \Oleksandrsokhan\CommissionCalculator\CurrencyRateService()
+    new \Oleksandrsokhan\CommissionCalculator\TxtFileReader(
+        new \Oleksandrsokhan\CommissionCalculator\TransactionValidator()
+    ),
+    [
+        'EUR' => new \Oleksandrsokhan\CommissionCalculator\EurCommissionCalculator(
+            new \Oleksandrsokhan\CommissionCalculator\BinService(),
+        ),
+        'default' => new \Oleksandrsokhan\CommissionCalculator\DefaultCommissionCalculator(
+            new \Oleksandrsokhan\CommissionCalculator\BinService(),
+            new \Oleksandrsokhan\CommissionCalculator\CurrencyRateService()
+        )
+    ]
 );
 try {
     $commission = $app->run($argv);

@@ -3,46 +3,27 @@ declare(strict_types=1);
 
 namespace Oleksandrsokhan\CommissionCalculator;
 
-class Transaction
+class Transaction implements Api\TransactionInterface
 {
-    public string $bin;
-
-    public float $amount;
-
-    public string $currency;
-
-    public static function fromJsonString(string $jsonString): self
-    {
-        $data = json_decode($jsonString, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \InvalidArgumentException('Invalid JSON format');
-        }
-        self::validate($data);
-
-        $transaction = new self();
-        $transaction->bin = $data['bin'];
-        $transaction->amount = (float) $data['amount'];
-        $transaction->currency = $data['currency'];
-
-        return $transaction;
+    public function __construct(
+        private readonly string $bin,
+        private readonly float $amount,
+        private readonly string $currency
+    ) {
     }
 
-    private static function validate(mixed $data): void
+    public function getBin(): string
     {
-        if (!is_array($data)) {
-            throw new \InvalidArgumentException('Invalid data format');
-        }
+        return $this->bin;
+    }
 
-        if (!isset($data['bin'])) {
-            throw new \InvalidArgumentException('Missing bin');
-        }
+    public function getAmount(): float
+    {
+        return $this->amount;
+    }
 
-        if (!isset($data['amount'])) {
-            throw new \InvalidArgumentException('Missing amount');
-        }
-
-        if (!isset($data['currency'])) {
-            throw new \InvalidArgumentException('Missing currency');
-        }
+    public function getCurrency(): string
+    {
+        return $this->currency;
     }
 }

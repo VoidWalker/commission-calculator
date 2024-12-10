@@ -3,18 +3,19 @@ declare(strict_types=1);
 
 namespace Oleksandrsokhan\CommissionCalculator;
 
-use Oleksandrsokhan\CommissionCalculator\Api\BinServiceInterface;
-use Oleksandrsokhan\CommissionCalculator\Api\CurrencyRateServiceInterface;
+use Oleksandrsokhan\CommissionCalculator\Api\CommissionCalculatorInterface;
 use Oleksandrsokhan\CommissionCalculator\Api\FileReaderInterface;
 
 class App
 {
+    /**
+     * @param FileReaderInterface $fileReader
+     * @param CommissionCalculatorInterface[] $commissionCalculators
+     */
     public function __construct(
         private readonly FileReaderInterface $fileReader,
-        private readonly BinServiceInterface $binService,
-        private readonly CurrencyRateServiceInterface $currencyRateService
+        private readonly array $commissionCalculators
     ) {
-
     }
 
     public function run($argv): array
@@ -26,27 +27,17 @@ class App
             throw new \InvalidArgumentException('Please provide file path as a parameter');
         }
 
-        $rows = $this->fileReader->read($filePath);
-
-        foreach ($rows as $row) {
-            $transaction = Transaction::fromJsonString($row);
-            $isEu = $this->binService->isEuCountryCard($transaction->bin);
-            $rate = $this->currencyRateService->getRate($transaction->currency);
-
-            $result[] = number_format($this->calculateCommission($transaction, $isEu, $rate), 2);
+        /** @var Transaction $transaction */
+        foreach ($this->fileReader->readTransactions($filePath) as $transaction) {
+            $result[] = number_format($this->calculateCommission($transaction), 2);
         }
 
         return $result;
     }
 
-    private function calculateCommission(Transaction $transaction, bool $isEu, float $rate): float
+    private function calculateCommission(Transaction $transaction): float
     {
-        if ($transaction->currency === 'EUR' || $rate == 0) {
-            $amount = $transaction->amount;
-        } else {
-            $amount = $transaction->amount / $rate;
-        }
-
-        return $isEu ? $amount * 0.01 : $amount * 0.02;
+        $calculator = $this->comissionCalculators[$transaction->getCurrency()] ?? $this->commissionCalculators['default'];
+        return $calculator->calculateCommission($transaction);
     }
 }
