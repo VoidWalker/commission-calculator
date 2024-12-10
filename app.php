@@ -26,7 +26,8 @@ $app = new App(
 try {
     $commission = $app->run($argv);
     foreach ($commission as $value) {
-        echo number_format($value, 2) . PHP_EOL;
+//        echo number_format($value, 2) . PHP_EOL;
+        echo ceil($value * 100) / 100 . PHP_EOL;
     }
 } catch (\Exception $e) {
     echo $e->getMessage() . PHP_EOL;
