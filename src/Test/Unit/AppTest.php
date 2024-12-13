@@ -37,7 +37,7 @@ class AppTest extends TestCase
 
         $result = $app->run(['script.php', 'path/to/file']);
 
-        $this->assertSame(['1.00', '2.00'], $result);
+        $this->assertSame([1.0, 2.0], $result);
     }
 
     public function testRunThrowsExceptionForMissingFilePath(): void
@@ -71,7 +71,7 @@ class AppTest extends TestCase
 
         $result = $app->run(['script.php', 'path/to/file']);
 
-        $this->assertSame(['200.00'], $result);
+        $this->assertSame([200.0], $result);
     }
 
     public function testRunHandlesFileReaderFailure(): void

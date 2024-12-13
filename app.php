@@ -3,23 +3,26 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use \Oleksandrsokhan\CommissionCalculator\App;
 
+
+$config = new \Oleksandrsokhan\CommissionCalculator\Config();
+$httpClient = new \GuzzleHttp\Client();
+$binService = new \Oleksandrsokhan\CommissionCalculator\BinService($httpClient);
+
 $app = new App(
     new \Oleksandrsokhan\CommissionCalculator\TxtFileReader(
         new \Oleksandrsokhan\CommissionCalculator\TransactionValidator()
     ),
     [
         'EUR' => new \Oleksandrsokhan\CommissionCalculator\EurCommissionCalculator(
-            new \Oleksandrsokhan\CommissionCalculator\BinService(
-                new \GuzzleHttp\Client()
-            ),
+            $binService,
+            $config
         ),
         'default' => new \Oleksandrsokhan\CommissionCalculator\DefaultCommissionCalculator(
-            new \Oleksandrsokhan\CommissionCalculator\BinService(
-                new \GuzzleHttp\Client()
-            ),
+            $binService,
             new \Oleksandrsokhan\CommissionCalculator\CurrencyRateService(
-                new \GuzzleHttp\Client()
-            )
+                $httpClient
+            ),
+            $config
         )
     ]
 );

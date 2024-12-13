@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Oleksandrsokhan\CommissionCalculator\Test\Unit;
 
 use Oleksandrsokhan\CommissionCalculator\Api\BinServiceInterface;
+use Oleksandrsokhan\CommissionCalculator\Api\ConfigInterface;
 use Oleksandrsokhan\CommissionCalculator\Api\TransactionInterface;
 use Oleksandrsokhan\CommissionCalculator\EurCommissionCalculator;
 use PHPUnit\Framework\TestCase;
@@ -16,9 +17,13 @@ class EurCommissionCalculatorTest extends TestCase
     public function setUp(): void
     {
         $this->binService = $this->createMock(BinServiceInterface::class);
+        $config = $this->createMock(ConfigInterface::class);
+        $config->method('getBaseCurrencyCommission')->willReturn(0.01);
+        $config->method('getForeignCurrencyCommission')->willReturn(0.02);
 
         $this->commissionCalculator = new EurCommissionCalculator(
             $this->binService,
+            $config,
         );
     }
 

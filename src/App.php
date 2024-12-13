@@ -18,7 +18,11 @@ class App
     ) {
     }
 
-    public function run($argv): array
+    /**
+     * @param array $argv
+     * @return float[]
+     */
+    public function run(array $argv): array
     {
         $result = [];
         $filePath = $argv[1] ?? null;
@@ -29,7 +33,7 @@ class App
 
         /** @var Transaction $transaction */
         foreach ($this->fileReader->readTransactions($filePath) as $transaction) {
-            $result[] = number_format($this->calculateCommission($transaction), 2);
+            $result[] = $this->calculateCommission($transaction);
         }
 
         return $result;
