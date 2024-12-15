@@ -4,25 +4,24 @@ declare(strict_types=1);
 namespace Oleksandrsokhan\CommissionCalculator;
 
 use Oleksandrsokhan\CommissionCalculator\Api\BinServiceInterface;
+use Oleksandrsokhan\CommissionCalculator\Api\CommissionCalculatorAbstract;
 use Oleksandrsokhan\CommissionCalculator\Api\ConfigInterface;
 use Oleksandrsokhan\CommissionCalculator\Api\TransactionInterface;
 
-class DefaultCommissionCalculator implements Api\CommissionCalculatorInterface
+class DefaultCommissionCalculator extends CommissionCalculatorAbstract
 {
     public function __construct(
-        private readonly BinServiceInterface $binService,
+        BinServiceInterface $binService,
+        ConfigInterface $config,
         private readonly CurrencyRateService $currencyRateService,
-        private readonly ConfigInterface $config,
     ) {
+        parent::__construct($binService, $config);
     }
 
-    public function calculateCommission(TransactionInterface $transaction): float
+    protected function getAmount(TransactionInterface $transaction): float
     {
-        $isEu = $this->binService->isEuCountryCard($transaction->getBin());
         $rate = $this->currencyRateService->getRate($transaction->getCurrency());
 
-        $amount = $rate == 0 ? $transaction->getAmount() : $transaction->getAmount() / $rate;
-
-        return $isEu ? $amount * $this->config->getBaseCurrencyCommission() : $amount * $this->config->getForeignCurrencyCommission();
+        return $rate == 0 ? $transaction->getAmount() : $transaction->getAmount() / $rate;
     }
 }

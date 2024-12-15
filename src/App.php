@@ -10,11 +10,11 @@ class App
 {
     /**
      * @param FileReaderInterface $fileReader
-     * @param CommissionCalculatorInterface[] $commissionCalculators
+     * @param CommissionCalculatorInterface[] $commissionCalculationStrategies
      */
     public function __construct(
         private readonly FileReaderInterface $fileReader,
-        private readonly array $commissionCalculators
+        private readonly array $commissionCalculationStrategies
     ) {
     }
 
@@ -41,7 +41,7 @@ class App
 
     private function calculateCommission(Transaction $transaction): float
     {
-        $calculator = $this->commissionCalculators[$transaction->getCurrency()] ?? $this->commissionCalculators['default'];
-        return $calculator->calculateCommission($transaction);
+        $calculationStrategy = $this->commissionCalculationStrategies[$transaction->getCurrency()] ?? $this->commissionCalculationStrategies['default'];
+        return $calculationStrategy->calculateCommission($transaction);
     }
 }

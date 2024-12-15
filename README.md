@@ -1,4 +1,5 @@
 # commission-calculator
+# Author: [Sokhan Oleksandr](https://github.com/VoidWalker)
 
 ## Description
 

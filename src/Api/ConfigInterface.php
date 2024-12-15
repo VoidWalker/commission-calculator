@@ -5,7 +5,9 @@ namespace Oleksandrsokhan\CommissionCalculator\Api;
 
 interface ConfigInterface
 {
-    public function getBaseCurrencyCommission(): float;
+    public function getCommissionRateEu(): float;
 
-    public function getForeignCurrencyCommission(): float;
+    public function getCommissionRateNonEu(): float;
+
+    public function getBaseCurrency(): string;
 }

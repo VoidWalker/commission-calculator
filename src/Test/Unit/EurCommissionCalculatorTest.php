@@ -6,22 +6,22 @@ namespace Oleksandrsokhan\CommissionCalculator\Test\Unit;
 use Oleksandrsokhan\CommissionCalculator\Api\BinServiceInterface;
 use Oleksandrsokhan\CommissionCalculator\Api\ConfigInterface;
 use Oleksandrsokhan\CommissionCalculator\Api\TransactionInterface;
-use Oleksandrsokhan\CommissionCalculator\EurCommissionCalculator;
+use Oleksandrsokhan\CommissionCalculator\BaseCurrencyCommissionCalculator;
 use PHPUnit\Framework\TestCase;
 
 class EurCommissionCalculatorTest extends TestCase
 {
     private BinServiceInterface $binService;
-    private EurCommissionCalculator $commissionCalculator;
+    private BaseCurrencyCommissionCalculator $commissionCalculator;
 
     public function setUp(): void
     {
         $this->binService = $this->createMock(BinServiceInterface::class);
         $config = $this->createMock(ConfigInterface::class);
-        $config->method('getBaseCurrencyCommission')->willReturn(0.01);
-        $config->method('getForeignCurrencyCommission')->willReturn(0.02);
+        $config->method('getCommissionRateEu')->willReturn(0.01);
+        $config->method('getCommissionRateNonEu')->willReturn(0.02);
 
-        $this->commissionCalculator = new EurCommissionCalculator(
+        $this->commissionCalculator = new BaseCurrencyCommissionCalculator(
             $this->binService,
             $config,
         );
@@ -29,7 +29,8 @@ class EurCommissionCalculatorTest extends TestCase
 
     public function testCalculateCommissionEuCountry(): void
     {
-        $this->binService->method('isEuCountryCard')
+        $this->binService->expects($this->once())
+            ->method('isEuCountryCard')
             ->with('45717360')
             ->willReturn(true);
 
@@ -42,7 +43,8 @@ class EurCommissionCalculatorTest extends TestCase
 
     public function testCalculateCommissionNonEuCountry(): void
     {
-        $this->binService->method('isEuCountryCard')
+        $this->binService->expects($this->once())
+            ->method('isEuCountryCard')
             ->with('516793')
             ->willReturn(false);
 

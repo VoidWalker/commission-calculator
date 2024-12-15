@@ -5,13 +5,18 @@ namespace Oleksandrsokhan\CommissionCalculator;
 
 class Config implements Api\ConfigInterface
 {
-    public function getBaseCurrencyCommission(): float
+    public function getCommissionRateEu(): float
     {
         return 0.01;
     }
 
-    public function getForeignCurrencyCommission(): float
+    public function getCommissionRateNonEu(): float
     {
         return 0.02;
+    }
+
+    public function getBaseCurrency(): string
+    {
+        return 'EUR';
     }
 }

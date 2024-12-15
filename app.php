@@ -3,7 +3,6 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use \Oleksandrsokhan\CommissionCalculator\App;
 
-
 $config = new \Oleksandrsokhan\CommissionCalculator\Config();
 $httpClient = new \GuzzleHttp\Client();
 $binService = new \Oleksandrsokhan\CommissionCalculator\BinService($httpClient);
@@ -13,16 +12,16 @@ $app = new App(
         new \Oleksandrsokhan\CommissionCalculator\TransactionValidator()
     ),
     [
-        'EUR' => new \Oleksandrsokhan\CommissionCalculator\EurCommissionCalculator(
+        $config->getBaseCurrency() => new \Oleksandrsokhan\CommissionCalculator\BaseCurrencyCommissionCalculator(
             $binService,
             $config
         ),
         'default' => new \Oleksandrsokhan\CommissionCalculator\DefaultCommissionCalculator(
             $binService,
+            $config,
             new \Oleksandrsokhan\CommissionCalculator\CurrencyRateService(
                 $httpClient
-            ),
-            $config
+            )
         )
     ]
 );

@@ -22,23 +22,25 @@ class DefaultCommissionCalculatorTest extends TestCase
         $this->binService = $this->createMock(BinServiceInterface::class);
         $this->currencyRateService = $this->createMock(CurrencyRateService::class);
         $config = $this->createMock(ConfigInterface::class);
-        $config->method('getBaseCurrencyCommission')->willReturn(0.01);
-        $config->method('getForeignCurrencyCommission')->willReturn(0.02);
+        $config->method('getCommissionRateEu')->willReturn(0.01);
+        $config->method('getCommissionRateNonEu')->willReturn(0.02);
 
         $this->commissionCalculator = new DefaultCommissionCalculator(
             $this->binService,
-            $this->currencyRateService,
             $config,
+            $this->currencyRateService,
         );
     }
 
     public function testCalculateCommissionEuCountry(): void
     {
-        $this->binService->method('isEuCountryCard')
+        $this->binService->expects($this->once())
+            ->method('isEuCountryCard')
             ->with('45717360')
             ->willReturn(true);
 
-        $this->currencyRateService->method('getRate')
+        $this->currencyRateService->expects($this->once())
+            ->method('getRate')
             ->with('EUR')
             ->willReturn(1.0);
 
@@ -56,11 +58,13 @@ class DefaultCommissionCalculatorTest extends TestCase
 
     public function testCalculateCommissionNonEuCountry(): void
     {
-        $this->binService->method('isEuCountryCard')
+        $this->binService->expects($this->once())
+            ->method('isEuCountryCard')
             ->with('516793')
             ->willReturn(false);
 
-        $this->currencyRateService->method('getRate')
+        $this->currencyRateService->expects($this->once())
+            ->method('getRate')
             ->with('USD')
             ->willReturn(1.2);
 
@@ -77,11 +81,13 @@ class DefaultCommissionCalculatorTest extends TestCase
 
     public function testCalculateCommissionZeroRate(): void
     {
-        $this->binService->method('isEuCountryCard')
+        $this->binService->expects($this->once())
+            ->method('isEuCountryCard')
             ->with('45417360')
             ->willReturn(true);
 
-        $this->currencyRateService->method('getRate')
+        $this->currencyRateService->expects($this->once())
+            ->method('getRate')
             ->with('JPY')
             ->willReturn(0.0);
 
